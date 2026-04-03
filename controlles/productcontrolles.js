@@ -6,7 +6,7 @@ const cloudinary = require("../config/cloudinary");
 const uploadOne = (buffer) =>
   new Promise((resolve, reject) => {
     cloudinary.uploader.upload_stream(
-      { folder: "jeunes-toys" },
+      { folder: "badee-beauty-products" },
       (err, result) => { if (err) reject(err); else resolve(result.secure_url); }
     ).end(buffer);
   });
