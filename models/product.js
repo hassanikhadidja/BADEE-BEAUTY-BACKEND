@@ -63,6 +63,15 @@ subCategory: {
       trim: true
     }
   ],
+  shades: [
+  {
+    name: String,
+    hex: String,
+    stock: Number,     // optional: stock per shade
+    price: Number      // optional: different price per shade
+  }
+],
+
 
 rating:{type:Number,default:0,min: 0,
       max: 5},
