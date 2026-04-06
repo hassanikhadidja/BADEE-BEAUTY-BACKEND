@@ -6,6 +6,8 @@ const orderItemSchema = new mongoose.Schema({
   price:     { type: Number, required: true },
   quantity:  { type: Number, required: true, min: 1 },
   img:       { type: String, default: "" },
+  selectedOption: { type: String, default: "" },
+  selectedHex:    { type: String, default: "" },
 }, { _id: false });
 
 const orderSchema = new mongoose.Schema({

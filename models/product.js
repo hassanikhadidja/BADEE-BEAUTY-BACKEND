@@ -20,7 +20,7 @@ img:[ {
 description:{type:String,require:[true, 'La description est obligatoire']},
 category: {
     type: String,
-    enum: ['Makeup', 'Skincare', 'Haircare', 'Fragrance', 'Bodycare', 'Other'],
+    enum: ['Skincare', 'Makeup', 'Hair Care', 'Hair Color', 'Fragrance', 'Haircare', 'Bodycare', 'Other'],
     required: true
   },
 subCategory: {
@@ -38,6 +38,7 @@ subCategory: {
       'Perfume',
       'Hair',
       'Body',
+      'Soins',
       'Other'
     ]
   },
