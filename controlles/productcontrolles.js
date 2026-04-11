@@ -48,9 +48,17 @@ exports.AddProduct = async (req, res) => {
     if (!req.files || req.files.length === 0)
       return res.status(400).send({ msg: "At least one image is required" });
 
-    const urls    = await uploadAll(req.files);
-    const product = new Product(req.body);
-    product.img   = urls;
+    const urls = await uploadAll(req.files);
+    const body = { ...req.body };
+    // FormData sends `shades` as a JSON string; Mongoose cannot cast "[]" to embedded docs.
+    if (body.category !== "Makeup" && body.category !== "Hair Color") {
+      body.shades = [];
+    } else {
+      body.shades = parseShades(body);
+    }
+
+    const product = new Product(body);
+    product.img = urls;
     await product.save();
     return res.status(201).send({ msg: "product added" });
   } catch (error) {
