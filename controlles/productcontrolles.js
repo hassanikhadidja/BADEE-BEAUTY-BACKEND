@@ -1,6 +1,11 @@
+
 // controlles/productcontrolles.js
 const Product    = require("../models/product");
 const cloudinary = require("../config/cloudinary");
+
+function parseFormBool(v) {
+  return v === true || v === "true" || v === 1 || v === "1";
+}
 
 function parseShades(body) {
   const cat = body.category;
@@ -50,6 +55,8 @@ exports.AddProduct = async (req, res) => {
 
     const urls = await uploadAll(req.files);
     const body = { ...req.body };
+    body.isNew = parseFormBool(body.isNew);
+    body.isTrending = parseFormBool(body.isTrending);
     // FormData sends `shades` as a JSON string; Mongoose cannot cast "[]" to embedded docs.
     if (body.category !== "Makeup" && body.category !== "Hair Color") {
       body.shades = [];
@@ -88,6 +95,8 @@ exports.GetOneProduct = async (req, res) => {
 exports.UpdateProduct = async (req, res) => {
   try {
     const updateData = { ...req.body };
+    if (updateData.isNew !== undefined) updateData.isNew = parseFormBool(updateData.isNew);
+    if (updateData.isTrending !== undefined) updateData.isTrending = parseFormBool(updateData.isTrending);
 
     // keepImgs: existing Cloudinary URLs the frontend wants to KEEP.
     // Can be a single string or an array — normalise to array.

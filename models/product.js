@@ -46,6 +46,14 @@ subCategory: {
     type: Boolean,
     default: true
   },
+ isNew: {
+    type: Boolean,
+    default: false,
+  },
+  isTrending: {
+    type: Boolean,
+    default: false,
+  },
     skinType: [
     {
       type: String,
