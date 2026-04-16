@@ -11,6 +11,7 @@ const userRoutes = require("./routes/userRoutes");
 
 const cors = require("cors");
 const orderRoutes = require("./routes/orderRoutes");
+const blogRoutes = require("./routes/blogRoutes");
 
 
 connectDB()
@@ -39,6 +40,7 @@ app.use("/product", productRoutes);
 app.use("/user", userRoutes);
 
 app.use("/order", orderRoutes);
+app.use("/blog", blogRoutes);
 
 // ─── 3. 404 handler (catch-all) ────────────────────────────────
 app.use((req, res) => {
