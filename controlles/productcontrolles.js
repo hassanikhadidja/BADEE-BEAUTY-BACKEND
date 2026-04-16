@@ -4,7 +4,60 @@ const Product    = require("../models/product");
 const cloudinary = require("../config/cloudinary");
 
 function parseFormBool(v) {
+  if (Array.isArray(v)) v = v[v.length - 1];
+  if (typeof v === "string") v = v.trim();
   return v === true || v === "true" || v === 1 || v === "1";
+}
+
+/** FormData / multer always sends packProducts as a JSON string — Mongoose cannot cast that to subdocs. */
+function parsePackProductsRaw(raw) {
+  if (raw == null) return [];
+  if (typeof raw === "string") {
+    const t = raw.trim();
+    if (!t) return [];
+    try {
+      raw = JSON.parse(t);
+    } catch {
+      return [];
+    }
+  }
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((x) => {
+      const name = String(x?.name || "").trim();
+      const volume = String(x?.volume || "").trim();
+      const type = String(x?.type || "").trim();
+      if (!name && !volume && !type) return null;
+      return { name, volume, type };
+    })
+    .filter(Boolean);
+}
+
+/**
+ * Normalise packProducts en vrai tableau avant save / update.
+ * Sans ça, une chaîne JSON provoque CastError sur le schéma embarqué.
+ */
+function attachPackProducts(body) {
+  const hasPack = Object.prototype.hasOwnProperty.call(body, "packProducts");
+  const hasIsPack = body.isPack !== undefined;
+
+  if (!hasPack && !hasIsPack) return;
+
+  if (hasIsPack) body.isPack = parseFormBool(body.isPack);
+
+  if (!hasPack) {
+    if (hasIsPack && body.isPack === false) body.packProducts = [];
+    return;
+  }
+
+  const rows = parsePackProductsRaw(body.packProducts);
+
+  if (hasIsPack) {
+    body.packProducts = body.isPack ? rows : [];
+  } else {
+    body.isPack = rows.length > 0;
+    body.packProducts = rows;
+  }
 }
 
 function parseShades(body) {
@@ -57,6 +110,7 @@ exports.AddProduct = async (req, res) => {
     const body = { ...req.body };
     body.isNew = parseFormBool(body.isNew);
     body.isTrending = parseFormBool(body.isTrending);
+    attachPackProducts(body);
     // FormData sends `shades` as a JSON string; Mongoose cannot cast "[]" to embedded docs.
     if (body.category !== "Makeup" && body.category !== "Hair Color") {
       body.shades = [];
@@ -112,6 +166,8 @@ exports.UpdateProduct = async (req, res) => {
     // Remove keepImgs from the top-level update object
     // (it's now merged into img, no need to store it separately)
     delete updateData.keepImgs;
+
+    attachPackProducts(updateData);
 
     if (
       updateData.category !== undefined &&
