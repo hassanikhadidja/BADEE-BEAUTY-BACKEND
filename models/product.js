@@ -80,6 +80,17 @@ subCategory: {
     price: Number      // optional: different price per shade
   }
 ],
+ isPack: {
+    type: Boolean,
+    default: false,
+  },
+  packProducts: [
+    {
+      name: { type: String, trim: true },
+      volume: { type: String, trim: true },
+      type: { type: String, trim: true },
+    },
+  ],
 
 
 rating:{type:Number,default:0,min: 0,
