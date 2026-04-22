@@ -7,7 +7,7 @@ const DELIVERY_FEE = 500;             // DA — flat fee below threshold
 // ── CREATE order (public — no auth required) ─────────────────────
 exports.CreateOrder = async (req, res) => {
   try {
-    const { customerName, phone, wilaya, commune, items, note } = req.body;
+    const { customerName, customerEmail, phone, wilaya, commune, items, note } = req.body;
 
     if (!items || items.length === 0)
       return res.status(400).json({ msg: "Order must have at least one item" });
@@ -20,9 +20,16 @@ exports.CreateOrder = async (req, res) => {
     const userId = req.user ? req.user._id : null;
 
     const order = new Order({
-      customerName, phone, wilaya, commune,
+      customerName,
+      customerEmail: typeof customerEmail === "string" ? customerEmail.trim() : "",
+      phone,
+      wilaya,
+      commune: typeof commune === "string" ? commune.trim() : "",
       userId,
-      items, subtotal, deliveryFee, total,
+      items,
+      subtotal,
+      deliveryFee,
+      total,
       note: note || "",
     });
 

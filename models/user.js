@@ -4,6 +4,8 @@ const userSchema= new mongoose.Schema({
 email:{type:String,require:true,unique:true},
 password:{type:String,require:true},
 name:{type:String},
+/** Optional — used for birthday offers / gifts by e-mail */
+birthday:{type:Date,default:null},
 role:{type:String, enum:["admin","client"],default:"client"}
 })
 const user=mongoose.model('user',userSchema)

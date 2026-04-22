@@ -3,9 +3,21 @@ const passwordvalidator = require("../middlewares/passwordvalidator")
 const User=require("../models/user")
 const bcrypt = require("bcrypt")
 
+function parseOptionalBirthday(raw) {
+    if (raw == null || raw === "") return null
+    const s = String(raw).trim()
+    if (!s) return null
+    const d = new Date(s)
+    if (Number.isNaN(d.getTime())) return null
+    const now = new Date()
+    const min = new Date(1900, 0, 1)
+    if (d > now || d < min) return null
+    return d
+}
+
 exports.Adduser=async(req,res)=>{
     try {
-        const {email}=req.body
+        const {email,name,password,birthday}=req.body
         if(req.body.role){
             return res.status(400).json({ msg: "Not auth !!" })
         }
@@ -17,11 +29,17 @@ exports.Adduser=async(req,res)=>{
   if( Matcheduser){
     return res.status(400).json({msg:"Email exist please login"})
   }
-  if(!passwordvalidator(req.body.password)){
+  if(!passwordvalidator(password)){
     return res.status(400).json({msg:"Invalid password"})
   }
-  const user= new User(req.body)
-  const hashedPassword = await bcrypt.hash(req.body.password,10); 
+  const birthdayDate = parseOptionalBirthday(birthday)
+  const user= new User({
+    name,
+    email,
+    password,
+    ...(birthdayDate ? { birthday: birthdayDate } : {}),
+  })
+  const hashedPassword = await bcrypt.hash(password,10); 
           user.password=hashedPassword
            await user.save()
            return res.status(201).json({msg:"Register success"})
