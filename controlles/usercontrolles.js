@@ -30,7 +30,7 @@ exports.Adduser=async(req,res)=>{
     return res.status(400).json({msg:"Email exist please login"})
   }
   if(!passwordvalidator(password)){
-    return res.status(400).json({msg:"Invalid password"})
+    return res.status(400).json({msg:"Le mot de passe doit contenir au moins 6 caractères."})
   }
   const birthdayDate = parseOptionalBirthday(birthday)
   const user= new User({
